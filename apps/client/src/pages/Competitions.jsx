@@ -3,6 +3,12 @@ import Competition from '../components/Competition';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import CreateCompetitionModal from '../components/CreateCompetitionModal';
+import {
+  getCompetitions,
+  createCompetition,
+  updateCompetition,
+  deleteCompetition,
+} from '../api/api';
 import '../styles/Competitions.css';
 
 function Competitions() {
@@ -20,41 +26,70 @@ function Competitions() {
   });
 
   useEffect(() => {
-    setCompetitions([
-      {
-        id: 1,
-        name: 'World Championship 2026',
-        date: '2026-03-15',
-        location: 'Boston, USA',
-        category: 'men_single',
-        segment: 'short_program',
-        status: 'in_progress',
-      },
-      {
-        id: 2,
-        name: 'World Championship 2026',
-        date: '2026-03-20',
-        location: 'Boston, USA',
-        category: 'women_single',
-        segment: 'free_skate',
-        status: 'upcoming',
-      },
-    ]);
+    const fetchCompetitions = async () => {
+      try {
+        const res = await getCompetitions();
+        setCompetitions(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchCompetitions();
   }, []);
 
-  const handleCreate = () => {
-    setCompetitions([{ ...form, id: Date.now() }, ...competitions]);
+  const handleCreate = async () => {
+    try {
+      if (form.id) {
+        const res = await updateCompetition(form.id, form);
 
+        setCompetitions(
+          competitions.map((c) => (c.id === form.id ? res.data : c)),
+        );
+      } else {
+        const res = await createCompetition(form);
+
+        setCompetitions([res.data, ...competitions]);
+      }
+
+      setForm({
+        name: '',
+        date: '',
+        location: '',
+        category: 'men_single',
+        segment: 'short_program',
+        status: 'upcoming',
+      });
+
+      setOpen(false);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Delete this competition?')) return;
+
+    try {
+      await deleteCompetition(id);
+      setCompetitions(competitions.filter((c) => c.id !== id));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleEdit = (comp) => {
     setForm({
-      name: '',
-      date: '',
-      location: '',
-      category: 'men_single',
-      segment: 'short_program',
-      status: 'upcoming',
+      id: comp.id,
+      name: comp.name || '',
+      date: comp.date?.slice(0, 10) || '',
+      location: comp.location || '',
+      category: comp.category || 'men_single',
+      segment: comp.segment || 'short_program',
+      status: comp.status || 'upcoming',
     });
 
-    setOpen(false);
+    setOpen(true);
   };
 
   const filtered = competitions.filter((c) =>
@@ -89,7 +124,12 @@ function Competitions() {
 
         <div className="competitions">
           {filtered.map((comp) => (
-            <Competition key={comp.id} comp={comp} />
+            <Competition
+              key={comp.id}
+              comp={comp}
+              onDelete={handleDelete}
+              onEdit={handleEdit}
+            />
           ))}
         </div>
       </main>

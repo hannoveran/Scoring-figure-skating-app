@@ -40,6 +40,8 @@
 
 /* CARD */
 .competition {
+  display: flex;
+  flex-direction: column;
   width: 280px;
   background: var(--background);
   text-decoration: none;
@@ -51,6 +53,9 @@
   display: flex;
   flex-direction: column;
   gap: 2vh;
+
+  text-decoration: none;
+  color: inherit;
 }
 
 .competition:hover {
@@ -120,4 +125,30 @@
   display: flex;
   justify-content: space-between;
   margin-top: 10px;
+}
+
+.competition-actions {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border-top: 2px solid var(--border-dark);
+}
+
+/* BUTTONS SAME STYLE */
+.competition-actions button {
+  padding: 6px 10px;
+  border: 2px solid var(--border-dark);
+  background: var(--light-teal);
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.competition-actions button:hover {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+/* delete = danger */
+.competition-actions button:last-child {
+  background: var(--light-pink);
 }

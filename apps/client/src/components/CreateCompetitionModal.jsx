@@ -6,7 +6,7 @@ function CreateCompetitionModal({ open, onClose, onCreate, form, setForm }) {
   return (
     <div className="modal">
       <div className="modal-content shadow-lg">
-        <h2>Create Competition</h2>
+        <h2>{form.id ? 'Edit Competition' : 'Create Competition'}</h2>
 
         <form
           onSubmit={(e) => {
@@ -55,7 +55,7 @@ function CreateCompetitionModal({ open, onClose, onCreate, form, setForm }) {
 
           <div className="modal-actions">
             <button type="submit" className="btn-primary shadow-sm">
-              Create
+              {form.id ? 'Update' : 'Create'}
             </button>
 
             <button type="button" className="btn-secondary" onClick={onClose}>
